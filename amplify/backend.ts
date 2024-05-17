@@ -1,13 +1,14 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource.js';
 import { data } from './data/resource.js';
+import { Policy, PolicyStatement } from '@aws-cdk/aws-iam'; // Import the missing Policy class
 
-defineBackend({
+const backend = defineBackend({
   auth,
   data,
 });
 
-const livenessStack = createStack("liveness-stack");
+const livenessStack = backend.createStack("liveness-stack");
 
 const livenessPolicy = new Policy(livenessStack, "LivenessPolicy", {
   statements: [
@@ -17,9 +18,5 @@ const livenessPolicy = new Policy(livenessStack, "LivenessPolicy", {
     }),
   ],
 });
-auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(livenessPolicy); // allows guest user access
-auth.resources.authenticatedUserIamRole.attachInlinePolicy(livenessPolicy); // allows logged in user access
-
-function createStack(arg0: string) {
-  throw new Error('Function not implemented.');
-}
+backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(livenessPolicy); // allows guest user access
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(livenessPolicy); // allows logged in user access
