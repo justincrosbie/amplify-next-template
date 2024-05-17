@@ -18,7 +18,7 @@ const client = generateClient<Schema>();
 
 export default function App() {
   return (
-    <ThemeProvider children={undefined}>
+    <ThemeProvider>
       <LivenessQuickStartReact />
     </ThemeProvider>
   );
