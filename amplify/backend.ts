@@ -1,7 +1,8 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource.js';
 import { data } from './data/resource.js';
-import { Policy, PolicyStatement } from '@aws-cdk/aws-iam'; // Import the missing Policy class
+import { Stack } from 'aws-cdk-lib';
+import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 const backend = defineBackend({
   auth,
