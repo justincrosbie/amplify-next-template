@@ -27,6 +27,11 @@ export function LivenessQuickStartReact() {
   }, []);
 
   const handleAnalysisComplete: () => Promise<void> = async () => {
+
+    if ( !createLivenessApiData ) {
+        throw new Error('Session ID not found');
+    }
+
     /*
      * This should be replaced with a real call to your own backend API
      */
@@ -54,14 +59,18 @@ export function LivenessQuickStartReact() {
       {loading ? (
         <Loader />
       ) : (
-        <FaceLivenessDetector
-          sessionId={createLivenessApiData.sessionId}
-          region="us-east-1"
-          onAnalysisComplete={handleAnalysisComplete}
-          onError={(error) => {
-            console.error(error);
-          }}
-        />
+
+        createLivenessApiData ? (
+            <FaceLivenessDetector
+            sessionId={createLivenessApiData.sessionId}
+            region="us-east-1"
+            onAnalysisComplete={handleAnalysisComplete}
+            onError={(error) => {
+                console.error(error);
+            }}
+            />
+        ) : ( <div>Session ID not found</div> )
+            
       )}
     </ThemeProvider>
   );
