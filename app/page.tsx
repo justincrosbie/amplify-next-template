@@ -22,20 +22,20 @@ Amplify.configure({
 });
 
 
-Amplify.configure({
-  ...existingConfig,
-  API: {
-    ...existingConfig.API,
-    REST: {
-      ...existingConfig.API?.REST,
-      YourAPIName: {
-        endpoint:
-          'https://76xq8826sk.execute-api.us-east-1.amazonaws.com/prod/api-function',
-        region: 'us-east-1' // Optional
-      }
-    }
-  }
-});
+// Amplify.configure({
+//   ...existingConfig,
+//   API: {
+//     ...existingConfig.API,
+//     REST: {
+//       ...existingConfig.API?.REST,
+//       YourAPIName: {
+//         endpoint:
+//           'https://76xq8826sk.execute-api.us-east-1.amazonaws.com/prod/api-function',
+//         region: 'us-east-1' // Optional
+//       }
+//     }
+//   }
+// });
 
 const client = generateClient<Schema>();
 
