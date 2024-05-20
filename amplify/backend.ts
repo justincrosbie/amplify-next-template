@@ -13,14 +13,14 @@ import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 //   LambdaIntegration,
 //   RestApi,
 // } from "aws-cdk-lib/aws-apigateway";
-// import { myApiFunction } from "./functions/api-function/resource";
+import { myApiFunction } from "./functions/api-function/resource";
 import { sayHello } from './functions/say-hello/resource';
 
 const backend = defineBackend({
   auth,
   data,
   sayHello,
-  // myApiFunction,
+  myApiFunction,
   // livenessCreateSession,
   // livenessGetResults,
 });
