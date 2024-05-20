@@ -3,6 +3,7 @@
 import React from 'react';
 import { FaceLivenessDetector } from '@aws-amplify/ui-react-liveness';
 import { Loader, ThemeProvider } from '@aws-amplify/ui-react';
+import { get } from 'aws-amplify/api';
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -15,16 +16,42 @@ export function LivenessQuickStartReact() {
       /*
        * This should be replaced with a real call to your own backend API
        */
-      await new Promise((r) => setTimeout(r, 2000));
-      const mockResponse = { sessionId: 'mockSessionId' };
-      const data = mockResponse;
+      // await new Promise((r) => setTimeout(r, 2000));
+      // const mockResponse = { sessionId: '132b83b9-7ec5-460c-a647-c04c66a535ad' };
+      // const data = mockResponse;
 
-      setCreateLivenessApiData(data);
+      const data = await getSession();
+
+
+      if ( !data ) {
+          throw new Error('Session ID not found');
+      }
+
+      const sessionId = data.toLocaleString();
+
+      console.log('Session ID:', sessionId);
+
+      setCreateLivenessApiData({ sessionId: data.toLocaleString() });
       setLoading(false);
     };
 
     fetchCreateLiveness();
   }, []);
+
+  async function getSession() {
+    try {
+      const restOperation = get({ 
+        apiName: 'liveness-create-session',
+        path: '' 
+      });
+      const response = await restOperation.response;
+      console.log('GET call succeeded: ', response);
+      console.log('GET call succeeded, json = : ', response.body.json());
+      return response.body.json();
+    } catch (error: any) {
+      console.log('GET call failed: ', JSON.parse(error.response.body));
+    }
+  }
 
   const handleAnalysisComplete: () => Promise<void> = async () => {
 
