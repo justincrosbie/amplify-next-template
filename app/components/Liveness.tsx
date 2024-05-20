@@ -20,6 +20,10 @@ export function LivenessQuickStartReact() {
       // const mockResponse = { sessionId: '132b83b9-7ec5-460c-a647-c04c66a535ad' };
       // const data = mockResponse;
 
+      console.log('Calling function');
+      const testData = await callFunction();
+      console.log('Test Data:', testData);
+
       const data = await getSession();
 
 
@@ -41,6 +45,21 @@ export function LivenessQuickStartReact() {
     fetchCreateLiveness();
   }, []);
 
+  async function callFunction() {
+    try {
+      const restOperation = get({ 
+        apiName: 'myRestApi',
+        path: 'api-function' 
+      });
+      const response = await restOperation.response;
+      console.log('GET call succeeded: ', response);
+      console.log('GET call succeeded, json = : ', response.body.json());
+      return response.body.json();
+    } catch (error: any) {
+      console.log('GET call failed: ', JSON.parse(error));
+    }
+  }
+
   async function getSession() {
     try {
       const restOperation = get({ 
@@ -52,7 +71,7 @@ export function LivenessQuickStartReact() {
       console.log('GET call succeeded, json = : ', response.body.json());
       return response.body.json();
     } catch (error: any) {
-      console.log('GET call failed: ', JSON.parse(error.response.body));
+      console.log('GET call failed: ', JSON.parse(error));
     }
   }
 
@@ -67,7 +86,7 @@ export function LivenessQuickStartReact() {
       console.log('GET call succeeded, json = : ', response.body.json());
       return response.body.json();
     } catch (error: any) {
-      console.log('GET call failed: ', JSON.parse(error.response.body));
+      console.log('GET call failed: ', JSON.parse(error));
     }
   }
 
@@ -132,7 +151,7 @@ const resultJsonStr = data.toLocaleString();
             }}
             />
 
-            
+
         ) : ( <div>Session ID not found</div> )
             
       )}
