@@ -98,6 +98,7 @@ const apiRestPolicy = new Policy(apiStack, "RestApiPolicy", {
     new PolicyStatement({
       actions: ["execute-api:Invoke"],
       resources: [
+        `${myRestApi.arnForExecuteApi("items")}`,
         `${myRestApi.arnForExecuteApi("api-function")}`,
         `${myRestApi.arnForExecuteApi("cognito-auth-path")}`,
       ],
