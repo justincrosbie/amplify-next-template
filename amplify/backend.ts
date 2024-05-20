@@ -1,5 +1,5 @@
-import { livenessGetResults } from './functions/liveness/get-results/resource';
-import { livenessCreateSession } from './functions/liveness/create-session/resource';
+// import { livenessGetResults } from './functions/liveness/get-results/resource';
+// import { livenessCreateSession } from './functions/liveness/create-session/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource.js';
 import { data } from './data/resource.js';
@@ -13,16 +13,16 @@ import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 //   LambdaIntegration,
 //   RestApi,
 // } from "aws-cdk-lib/aws-apigateway";
-import { myApiFunction } from "./functions/api-function/resource";
+// import { myApiFunction } from "./functions/api-function/resource";
 import { sayHello } from './functions/say-hello/resource';
 
 const backend = defineBackend({
   auth,
   data,
   sayHello,
-  myApiFunction,
-  livenessCreateSession,
-  livenessGetResults,
+  // myApiFunction,
+  // livenessCreateSession,
+  // livenessGetResults,
 });
 
 const livenessStack = backend.createStack("liveness-stack");

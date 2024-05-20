@@ -21,7 +21,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     };
   }
 
-  const status = await getSessionResults(sessionId);
+  const result = await getSessionResults(sessionId);
 
   return {
     statusCode: 200,
@@ -30,7 +30,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       "Access-Control-Allow-Origin": "*", // Restrict this to domains you trust
       "Access-Control-Allow-Headers": "*", // Specify only the headers you need to allow
     },
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ result }),
   };
 };
 
@@ -46,5 +46,5 @@ async function getSessionResults(sessionId: string) {
     console.log("Confidence:", confidence);
     console.log("Status:", status);
 
-    return status;
+    return { status, confidence };
 }

@@ -27,7 +27,10 @@ export function LivenessQuickStartReact() {
           throw new Error('Session ID not found');
       }
 
-      const sessionId = data.toLocaleString();
+      const sessionIdJsonStr = data.toLocaleString();
+      console.log('Session ID JSON:', sessionIdJsonStr);
+
+      const sessionId = JSON.parse(sessionIdJsonStr).sessionId;
 
       console.log('Session ID:', sessionId);
 
@@ -41,8 +44,23 @@ export function LivenessQuickStartReact() {
   async function getSession() {
     try {
       const restOperation = get({ 
-        apiName: 'liveness-create-session',
-        path: '' 
+        apiName: 'myRestApi',
+        path: 'liveness-create-session' 
+      });
+      const response = await restOperation.response;
+      console.log('GET call succeeded: ', response);
+      console.log('GET call succeeded, json = : ', response.body.json());
+      return response.body.json();
+    } catch (error: any) {
+      console.log('GET call failed: ', JSON.parse(error.response.body));
+    }
+  }
+
+  async function getResults(sessionId: string) {
+    try {
+      const restOperation = get({ 
+        apiName: 'myRestApi',
+        path: 'liveness-get-results' 
       });
       const response = await restOperation.response;
       console.log('GET call succeeded: ', response);
@@ -62,10 +80,27 @@ export function LivenessQuickStartReact() {
     /*
      * This should be replaced with a real call to your own backend API
      */
-    const response = await fetch(
-      `/api/get?sessionId=${createLivenessApiData.sessionId}`
-    );
-    const data = await response.json();
+    // const response = await fetch(
+    //   `/api/get?sessionId=${createLivenessApiData.sessionId}`
+    // );
+    // const data = await response.json();
+
+    const data = await getResults(createLivenessApiData.sessionId);
+
+    if ( !data ) {
+      throw new Error('Result data not found');
+  }
+
+const resultJsonStr = data.toLocaleString();
+    console.log('Result JSON:', resultJsonStr);
+
+    const result = JSON.parse(resultJsonStr).sessionId;
+
+    console.log('Result:', result);
+
+
+    const confidence = parseFloat(result.confidence);
+
 
     /*
      * Note: The isLive flag is not returned from the GetFaceLivenessSession API
@@ -74,7 +109,7 @@ export function LivenessQuickStartReact() {
      * Any next steps from an authorization perspective should happen in your backend and you should not rely
      * on this value for any auth related decisions.
      */
-    if (data.isLive) {
+    if (confidence > 80 ) {
       console.log('User is live');
     } else {
       console.log('User is not live');
@@ -96,6 +131,8 @@ export function LivenessQuickStartReact() {
                 console.error(error);
             }}
             />
+
+            
         ) : ( <div>Session ID not found</div> )
             
       )}
