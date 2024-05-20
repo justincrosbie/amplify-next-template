@@ -26,6 +26,34 @@ export const data = defineData({
   },
 });
 
+// const schema = a.schema({
+//   identifyText: a
+//     .query()
+//     .arguments({
+//       path: a.string(),
+//     })
+//     .returns(a.string())
+//     .authorization((allow) => [allow.publicApiKey()])
+//     .handler(
+//       a.handler.custom({
+//         entry: "./identifyText.js",
+//         dataSource: "RekognitionDataSource",
+//       })
+//     ),
+// });
+
+// export type Schema = ClientSchema<typeof schema>;
+
+// export const data = defineData({
+//   schema,
+//   authorizationModes: {
+//     defaultAuthorizationMode: "apiKey",
+//     apiKeyAuthorizationMode: {
+//       expiresInDays: 30,
+//     },
+//   },
+// });
+
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a
 Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
@@ -54,3 +82,4 @@ Fetch records from the database and use them in your frontend component.
 // const { data: todos } = await client.models.Todo.list()
 
 // return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>
+

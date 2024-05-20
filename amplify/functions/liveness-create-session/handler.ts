@@ -1,7 +1,9 @@
 
 import type { APIGatewayProxyHandler } from "aws-lambda";
 
-const Rekognition = require("aws-sdk/clients/rekognition");
+import { Rekognition } from "@aws-sdk/client-rekognition";
+
+// const Rekognition = require("aws-sdk/clients/rekognition");
 
 const rekognitionClient = new Rekognition({ region: "us-east-1" });
 
@@ -23,7 +25,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   };
 
 async function createSession() {
-    const response = await rekognitionClient.createFaceLivenessSession().promise();
+    const response = await rekognitionClient.createFaceLivenessSession();
 
     const sessionId = response.SessionId;
     console.log("SessionId:", sessionId);

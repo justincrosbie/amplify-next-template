@@ -1,6 +1,8 @@
 import type { APIGatewayProxyHandler } from "aws-lambda";
 
-const Rekognition = require("aws-sdk/clients/rekognition");
+// const Rekognition = require("aws-sdk/clients/rekognition");
+
+import { Rekognition } from "@aws-sdk/client-rekognition";
 
 const rekognitionClient = new Rekognition({ region: "us-east-1" });
 
@@ -38,8 +40,7 @@ async function getSessionResults(sessionId: string) {
     const response = await rekognitionClient
         .getFaceLivenessSessionResults({
             SessionId: sessionId,
-        })
-        .promise();
+        });
 
     const confidence = response.Confidence;
     const status = response.Status;
