@@ -1,5 +1,5 @@
-// import { livenessGetResults } from './functions/liveness/get-results/resource';
-// import { livenessCreateSession } from './functions/liveness/create-session/resource';
+import { livenessGetResults } from './functions/liveness-get-results/resource';
+import { livenessCreateSession } from './functions/liveness-create-session/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource.js';
 import { data } from './data/resource.js';
@@ -21,8 +21,8 @@ const backend = defineBackend({
   data,
   sayHello,
   myApiFunction,
-  // livenessCreateSession,
-  // livenessGetResults,
+  livenessCreateSession,
+  livenessGetResults,
 });
 
 const livenessStack = backend.createStack("liveness-stack");
