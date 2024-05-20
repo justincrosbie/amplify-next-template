@@ -15,9 +15,9 @@ Amplify.configure(outputs);
 const existingConfig = Amplify.getConfig();
 Amplify.configure({
   ...existingConfig,
-  // API: {
-  //   REST: outputs.custom.API,
-  // },
+  API: {
+    REST: outputs.custom.API,
+  },
 });
 const client = generateClient<Schema>();
 
