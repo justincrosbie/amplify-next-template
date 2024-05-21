@@ -42,14 +42,14 @@ const client = generateClient<Schema>();
 export default function App() {
   return (    
     <ThemeProvider>
-      <Authenticator>
+      {/* <Authenticator>
         {({ signOut, user }) => (
           <main>
             <h1>Hello {user?.username}</h1>
             <button onClick={signOut}>Sign out</button>
           </main>
         )}
-      </Authenticator>
+      </Authenticator> */}
 
       <LivenessQuickStartReact />
     </ThemeProvider>

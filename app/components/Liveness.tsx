@@ -4,6 +4,7 @@ import React from 'react';
 import { FaceLivenessDetector } from '@aws-amplify/ui-react-liveness';
 import { Loader, ThemeProvider } from '@aws-amplify/ui-react';
 import { get } from 'aws-amplify/api';
+import axios from 'axios';
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -20,30 +21,30 @@ export function LivenessQuickStartReact() {
       // const mockResponse = { sessionId: '132b83b9-7ec5-460c-a647-c04c66a535ad' };
       // const data = mockResponse;
 
-      console.log('Calling function');
-      const testData = await callFunction();
-      console.log('Test Data:', testData);
+      // console.log('Calling function');
+      // const testData = await callFunction();
+      // console.log('Test Data:', testData);
 
       const data = await getSession();
-
 
       if ( !data ) {
           throw new Error('Session ID not found');
       }
 
-      const sessionIdJsonStr = data.toLocaleString();
-      console.log('Session ID JSON:', sessionIdJsonStr);
+      console.log('Data:', data);
 
-      const sessionId = JSON.parse(sessionIdJsonStr).sessionId;
+      const sessionId = data.SessionId;
 
       console.log('Session ID:', sessionId);
 
-      setCreateLivenessApiData({ sessionId: data.toLocaleString() });
+      setCreateLivenessApiData({ sessionId });
       setLoading(false);
     };
 
     fetchCreateLiveness();
   }, []);
+
+  const [result, setResult] = React.useState<any>(null);
 
   async function callFunction() {
     try {
@@ -61,6 +62,20 @@ export function LivenessQuickStartReact() {
   }
 
   async function getSession() {
+    const response = await axios.get("http://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com/recog/create");
+
+    console.log(response.data)
+    return response.data;
+  }
+
+  async function getResults(sessionId: string) {
+    const response = await axios.get(`http://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com/recog/results/${sessionId}`);
+
+    console.log(response.data)
+    return response.data;
+  }
+
+  async function getSessionAWS() {
     try {
       const restOperation = get({ 
         apiName: 'myRestApi',
@@ -75,7 +90,7 @@ export function LivenessQuickStartReact() {
     }
   }
 
-  async function getResults(sessionId: string) {
+  async function getResultsAWS(sessionId: string) {
     try {
       const restOperation = get({ 
         apiName: 'myRestApi',
@@ -105,21 +120,11 @@ export function LivenessQuickStartReact() {
     // const data = await response.json();
 
     const data = await getResults(createLivenessApiData.sessionId);
-
+    console.log("Got result!!!", data);
     if ( !data ) {
       throw new Error('Result data not found');
   }
-
-const resultJsonStr = data.toLocaleString();
-    console.log('Result JSON:', resultJsonStr);
-
-    const result = JSON.parse(resultJsonStr).sessionId;
-
-    console.log('Result:', result);
-
-
-    const confidence = parseFloat(result.confidence);
-
+    const confidence = parseFloat(data.confidence);
 
     /*
      * Note: The isLive flag is not returned from the GetFaceLivenessSession API
@@ -133,6 +138,13 @@ const resultJsonStr = data.toLocaleString();
     } else {
       console.log('User is not live');
     }
+
+    const conf_rounded = Math.round(confidence * 100) / 100;
+
+    const resultStr = `${data.status}, there is a ${conf_rounded}% confidence that the user is live.`;
+    setResult(resultStr);
+
+    alert('Analysis complete: ' + resultStr);
   };
 
   return (
@@ -150,11 +162,17 @@ const resultJsonStr = data.toLocaleString();
                 console.error(error);
             }}
             />
-
-
-        ) : ( <div>Session ID not found</div> )
-            
+        ) : ( <div>Session ID not found</div> )        
       )}
+
+      {
+              result ?
+              <div>
+                  <h3>{result}</h3>
+              </div>
+           : <div></div>
+    
+      }
     </ThemeProvider>
   );
 }
