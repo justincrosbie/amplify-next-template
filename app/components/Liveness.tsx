@@ -62,14 +62,14 @@ export function LivenessQuickStartReact() {
   }
 
   async function getSession() {
-    const response = await axios.get("http://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com/recog/create");
+    const response = await axios.get("https://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com/recog/create");
 
     console.log(response.data)
     return response.data;
   }
 
   async function getResults(sessionId: string) {
-    const response = await axios.get(`http://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com/recog/results/${sessionId}`);
+    const response = await axios.get(`https://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com/recog/results/${sessionId}`);
 
     console.log(response.data)
     return response.data;
