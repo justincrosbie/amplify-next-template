@@ -316,8 +316,6 @@ export function LivenessQuickStartReact() {
            : <div></div>
     
       }
-
-      <Button onClick={captureScreenshot}>Capture</Button>
     </ThemeProvider>
   );
 }
