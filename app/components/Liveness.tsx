@@ -1,18 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaceLivenessDetector } from '@aws-amplify/ui-react-liveness';
-import { Loader, ThemeProvider } from '@aws-amplify/ui-react';
-import { get } from 'aws-amplify/api';
+import { Button, Flex, Text, Heading, Loader, Theme, ThemeProvider, useTheme } from '@aws-amplify/ui-react';
 import axios from 'axios';
+// import { useScreenshot } from 'use-react-screenshot';
+import html2canvas from "html2canvas";
+import { QualityFilter } from '@aws-sdk/client-rekognition';
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [checkAge, setCheckAge] = React.useState<boolean>(false);
+
+  const [error, setError] = useState(undefined as any | undefined);
+
+  const ref = useRef(null)
+  // const [image, takeScreenshot] = useScreenshot()
+  // const getImage = () => takeScreenshot(ref.current)
+
+  const [image, setImage] = React.useState<string | null>(null);
+
   const [createLivenessApiData, setCreateLivenessApiData] = React.useState<{
     sessionId: string;
   } | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchCreateLiveness: () => Promise<void> = async () => {
       /*
        * This should be replaced with a real call to your own backend API
@@ -44,22 +56,132 @@ export function LivenessQuickStartReact() {
     fetchCreateLiveness();
   }, []);
 
+  useEffect(() => {
+    console.log('Image:', image)
+
+    if ( image ) getAge();
+  }, [image]);
+
   const [result, setResult] = React.useState<any>(null);
 
-  async function callFunction() {
+
+  const { tokens } = useTheme();
+  const theme: Theme = {
+    name: 'AAV Liveness Detection',
+    tokens: {
+      colors: {
+        background: {
+          primary: {
+            value: tokens.colors.neutral['90'].value,
+          },
+          secondary: {
+            value: tokens.colors.neutral['100'].value,
+          },
+        },
+        font: {
+          primary: {
+            value: tokens.colors.white.value,
+          },
+        },
+        brand: {
+          primary: {
+            '10': tokens.colors.teal['100'],
+            '80': tokens.colors.teal['40'],
+            '90': tokens.colors.teal['20'],
+            '100': tokens.colors.teal['10'],
+          },
+        },
+      },
+    },
+  };
+
+  const CustomError = useCallback(() => {
+    return (
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        width="100%"
+        height="100%"
+      >
+        <Flex
+          backgroundColor="white"
+          direction="column"
+          justifyContent="center"
+          padding="32px"
+        >
+          <Heading color="black">{error?.state}</Heading>
+          <Text>{error?.error.message}</Text>
+          <Button>Try again?</Button>
+        </Flex>
+      </Flex>
+    );
+  }, [error]);
+
+  const getAge = async () => {
     try {
-      const restOperation = get({ 
-        apiName: 'myRestApi',
-        path: 'api-function' 
+      const response = await axios.post('https://aavservice.fly.dev/api/verify', {
+        url: image
       });
-      const response = await restOperation.response;
-      console.log('GET call succeeded: ', response);
-      console.log('GET call succeeded, json = : ', response.body.json());
-      return response.body.json();
+      console.log(response)
+
+      const access_token = response?.data?.access_token ? response.data.access_token : 'not_allowed';
+
+      window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=${access_token}`;
+
     } catch (error: any) {
-      console.log('GET call failed: ', JSON.parse(error));
+      console.log('Error:', error);
+      if ( error.response.status === 401 ) {
+        window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
+      } else {
+        window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=server_error`;
+      }
     }
   }
+
+  function captureScreenshot() {
+
+    // after a 2 second interval, take a screenshot
+    // setTimeout(() => {
+    //   // takeScreenshot(ref.current);
+    //   takeScreenshot(ref.current);
+    // }, 2000);
+
+        if (!ref.current) return;
+
+        const els = document.getElementsByClassName('amplify-liveness-video');
+
+        Array.from(els).forEach((el: any) => {
+          // Do stuff here
+          el.style.display = 'block';
+
+          var canvasPromise = html2canvas(el, {
+            useCORS: true,
+          });
+          canvasPromise.then((canvas)=> {
+            var dataURL = canvas.toDataURL("image/jpeg", 0.5);
+    
+            setImage(dataURL);
+            // Create an image element from the data URL
+          });
+    
+        });        
+  }
+
+
+  // async function callFunction() {
+  //   try {
+  //     const restOperation = get({ 
+  //       apiName: 'myRestApi',
+  //       path: 'api-function' 
+  //     });
+  //     const response = await restOperation.response;
+  //     console.log('GET call succeeded: ', response);
+  //     console.log('GET call succeeded, json = : ', response.body.json());
+  //     return response.body.json();
+  //   } catch (error: any) {
+  //     console.log('GET call failed: ', JSON.parse(error));
+  //   }
+  // }
 // https://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com
 
   async function getSession() {
@@ -70,42 +192,44 @@ export function LivenessQuickStartReact() {
   }
 
   async function getResults(sessionId: string) {
+
     const response = await axios.get(`https://www.jc-aav.xyz/recog/results/${sessionId}`);
 
     console.log(response.data)
     return response.data;
   }
 
-  async function getSessionAWS() {
-    try {
-      const restOperation = get({ 
-        apiName: 'myRestApi',
-        path: 'liveness-create-session' 
-      });
-      const response = await restOperation.response;
-      console.log('GET call succeeded: ', response);
-      console.log('GET call succeeded, json = : ', response.body.json());
-      return response.body.json();
-    } catch (error: any) {
-      console.log('GET call failed: ', JSON.parse(error));
-    }
-  }
+  // async function getSessionAWS() {
+  //   try {
+  //     const restOperation = get({ 
+  //       apiName: 'myRestApi',
+  //       path: 'liveness-create-session' 
+  //     });
+  //     const response = await restOperation.response;
+  //     console.log('GET call succeeded: ', response);
+  //     console.log('GET call succeeded, json = : ', response.body.json());
+  //     return response.body.json();
+  //   } catch (error: any) {
+  //     console.log('GET call failed: ', JSON.parse(error));
+  //   }
+  // }
 
-  async function getResultsAWS(sessionId: string) {
-    try {
-      const restOperation = get({ 
-        apiName: 'myRestApi',
-        path: 'liveness-get-results' 
-      });
-      const response = await restOperation.response;
-      console.log('GET call succeeded: ', response);
-      console.log('GET call succeeded, json = : ', response.body.json());
-      return response.body.json();
-    } catch (error: any) {
-      console.log('GET call failed: ', JSON.parse(error));
-    }
-  }
+  // async function getResultsAWS(sessionId: string) {
+  //   try {
+  //     const restOperation = get({ 
+  //       apiName: 'myRestApi',
+  //       path: 'liveness-get-results' 
+  //     });
+  //     const response = await restOperation.response;
+  //     console.log('GET call succeeded: ', response);
+  //     console.log('GET call succeeded, json = : ', response.body.json());
+  //     return response.body.json();
+  //   } catch (error: any) {
+  //     console.log('GET call failed: ', JSON.parse(error));
+  //   }
+  // }
 
+  
   const handleAnalysisComplete: () => Promise<void> = async () => {
 
     if ( !createLivenessApiData ) {
@@ -119,6 +243,8 @@ export function LivenessQuickStartReact() {
     //   `/api/get?sessionId=${createLivenessApiData.sessionId}`
     // );
     // const data = await response.json();
+
+    await captureScreenshot();
 
     const data = await getResults(createLivenessApiData.sessionId);
     console.log("Got result!!!", data);
@@ -145,24 +271,40 @@ export function LivenessQuickStartReact() {
     const resultStr = `${data.status}, there is a ${conf_rounded}% confidence that the user is live.`;
     setResult(resultStr);
 
-    alert('Analysis complete: ' + resultStr);
+    // alert('Analysis complete: ' + resultStr);
+
+    console.log('Screenshot:', image)
+
+    if ( conf_rounded < 80 ) {
+      window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
+    } else {
+    }
   };
 
   return (
-    <ThemeProvider>
+
+
+    
+    <ThemeProvider theme={theme}>
       {loading ? (
         <Loader />
       ) : (
 
         createLivenessApiData ? (
-            <FaceLivenessDetector
-            sessionId={createLivenessApiData.sessionId}
-            region="us-east-1"
-            onAnalysisComplete={handleAnalysisComplete}
-            onError={(error) => {
-                console.error(error);
-            }}
-            />
+              <div ref={ref}>
+              <FaceLivenessDetector
+              sessionId={createLivenessApiData.sessionId}
+              region="us-east-1"
+              onAnalysisComplete={handleAnalysisComplete}
+              onError={(error) => {
+                setError(error);
+              }}
+              components={{
+                ErrorView: CustomError,
+              }}
+                      />
+              </div>
+            
         ) : ( <div>Session ID not found</div> )        
       )}
 
@@ -174,6 +316,8 @@ export function LivenessQuickStartReact() {
            : <div></div>
     
       }
+
+      <Button onClick={captureScreenshot}>Capture</Button>
     </ThemeProvider>
   );
 }
