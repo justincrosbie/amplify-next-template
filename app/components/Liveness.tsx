@@ -194,7 +194,7 @@ export function LivenessQuickStartReact() {
           count++;
         }
 
-        await new Promise(res => setTimeout(res, 500))
+        await new Promise(res => setTimeout(res, 2000))
 
         const els = document.getElementsByClassName('amplify-liveness-video');
         setInfoMsg('Taking screenshot, els is ...els.length: ' + els.length);
