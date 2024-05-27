@@ -175,18 +175,27 @@ export function LivenessQuickStartReact() {
 
           // After 5 seconds give up
           if ( count > 50 ) {
+            setInfoMsg('Breaking from cancel overlay to disappear...' + count);
             break;
           }
+          setInfoMsg('Waiting for cancel overlay to disappear...' + count);
           await new Promise(res => setTimeout(res, 100))
           count++;
       }
 
-      setInfoMsg('Waiting for cancel overlay to disappear...');
-      // 
-        // await new Promise(res => setTimeout(res, 2000))
+        while (document.getElementsByClassName('amplify-liveness-video').length < 1) {
+          // After 5 seconds give up
+          if ( count > 50 ) {
+            setInfoMsg('Breaking from waiting for amplify-liveness-video...' + count);
+            break;
+          }
+          setInfoMsg('Waiting for amplify-liveness-video...' + count);
+          await new Promise(res => setTimeout(res, 100))
+          count++;
+        }
 
         const els = document.getElementsByClassName('amplify-liveness-video');
-
+        setInfoMsg('Taking screenshot, els is ...els.length: ' + els.length);
         Array.from(els).forEach((el: any) => {
           el.style.display = 'block';
 
@@ -198,7 +207,7 @@ export function LivenessQuickStartReact() {
     
             console.log('Data URL:', dataURL);
 
-            setInfoMsg('Screenshot taken: ' + dataURL.substring(0, 100));
+            setInfoMsg('Screenshot taken' );
 
             setImage(dataURL);
             // Create an image element from the data URL
