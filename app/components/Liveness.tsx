@@ -156,9 +156,16 @@ export function LivenessQuickStartReact() {
 
         // amplify-liveness-cancel-container
 
+        var count = 0;
         while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
           console.log('Waiting for cancel button to disappear');
+
+          // After 5 seconds give up
+          if ( count > 50 ) {
+            break;
+          }
           await new Promise(res => setTimeout(res, 100))
+          count++;
       }
 
         // 
