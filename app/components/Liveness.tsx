@@ -366,9 +366,6 @@ export function LivenessQuickStartReact() {
            : <div></div>
     
       }
-          <Typography className="w-full flex flex-col justify-center items-center p-5" variant="h5" color="blue-gray">
-          Status: {infoMsg}
-          </Typography>
     </ThemeProvider>
   );
 }
