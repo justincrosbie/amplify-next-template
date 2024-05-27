@@ -7,10 +7,13 @@ import axios from 'axios';
 // import { useScreenshot } from 'use-react-screenshot';
 import html2canvas from "html2canvas";
 import { QualityFilter } from '@aws-sdk/client-rekognition';
+import { Typography } from '@material-tailwind/react';
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [checkAge, setCheckAge] = React.useState<boolean>(false);
+
+  const [infoMsg, setInfoMsg] = React.useState<string>('initializing...');
 
   const [error, setError] = useState(undefined as any | undefined);
 
@@ -118,17 +121,23 @@ export function LivenessQuickStartReact() {
   }, [error]);
 
   const getAge = async () => {
+
+    setInfoMsg('Sending image to aavservice: ' + image?.substring(0, 100));
+
     try {
       const response = await axios.post('https://aavservice.fly.dev/api/verify', {
         url: image
       });
       console.log(response)
 
+      setInfoMsg('Sending image to aavservice: ' + JSON.stringify(response.data));
+
       const access_token = response?.data?.access_token ? response.data.access_token : 'not_allowed';
 
       window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=${access_token}`;
 
     } catch (error: any) {
+      setInfoMsg('getAge: ERROR!!: ' + JSON.stringify(error));
       console.log('Error:', error);
       if ( error.response.status === 401 ) {
         window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
@@ -149,12 +158,16 @@ export function LivenessQuickStartReact() {
 
         if (!ref.current) return;
 
+        setInfoMsg('Clicking cancel...');
+
         const cancelButtonEls = document.getElementsByClassName('amplify-liveness-cancel-button');
         Array.from(cancelButtonEls).forEach((el: any) => {
           el.click();
         });
 
         // amplify-liveness-cancel-container
+
+        setInfoMsg('Waiting for cancel overlay to disappear...');
 
         var count = 0;
         while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
@@ -168,7 +181,8 @@ export function LivenessQuickStartReact() {
           count++;
       }
 
-        // 
+      setInfoMsg('Waiting for cancel overlay to disappear...');
+      // 
         // await new Promise(res => setTimeout(res, 2000))
 
         const els = document.getElementsByClassName('amplify-liveness-video');
@@ -183,6 +197,8 @@ export function LivenessQuickStartReact() {
             var dataURL = canvas.toDataURL("image/jpeg", 0.2);
     
             console.log('Data URL:', dataURL);
+
+            setInfoMsg('Screenshot taken: ' + dataURL.substring(0, 100));
 
             setImage(dataURL);
             // Create an image element from the data URL
@@ -310,6 +326,7 @@ export function LivenessQuickStartReact() {
 
     
     <ThemeProvider theme={theme}>
+
       {loading ? (
         <Loader />
       ) : (
@@ -340,6 +357,9 @@ export function LivenessQuickStartReact() {
            : <div></div>
     
       }
+          <Typography className="w-full flex flex-col justify-center items-center p-5" variant="h5" color="blue-gray">
+          Status: {infoMsg}
+          </Typography>
     </ThemeProvider>
   );
 }
