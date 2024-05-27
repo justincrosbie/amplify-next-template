@@ -138,7 +138,8 @@ export function LivenessQuickStartReact() {
     }
   }
 
-  function captureScreenshot() {
+  
+  async function captureScreenshot() {
 
     // after a 2 second interval, take a screenshot
     // setTimeout(() => {
@@ -148,18 +149,34 @@ export function LivenessQuickStartReact() {
 
         if (!ref.current) return;
 
+        const cancelButtonEls = document.getElementsByClassName('amplify-liveness-cancel-button');
+        Array.from(cancelButtonEls).forEach((el: any) => {
+          el.click();
+        });
+
+        // amplify-liveness-cancel-container
+
+        while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
+          console.log('Waiting for cancel button to disappear');
+          await new Promise(res => setTimeout(res, 100))
+      }
+
+        // 
+        // await new Promise(res => setTimeout(res, 2000))
+
         const els = document.getElementsByClassName('amplify-liveness-video');
 
         Array.from(els).forEach((el: any) => {
-          // Do stuff here
           el.style.display = 'block';
 
           var canvasPromise = html2canvas(el, {
             useCORS: true,
           });
           canvasPromise.then((canvas)=> {
-            var dataURL = canvas.toDataURL("image/jpeg", 0.5);
+            var dataURL = canvas.toDataURL("image/jpeg", 0.2);
     
+            console.log('Data URL:', dataURL);
+
             setImage(dataURL);
             // Create an image element from the data URL
           });
