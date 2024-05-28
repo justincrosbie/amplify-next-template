@@ -5,12 +5,15 @@ import { FaceLivenessDetector } from '@aws-amplify/ui-react-liveness';
 import { Button, Flex, Text, Heading, Loader, Theme, ThemeProvider, useTheme } from '@aws-amplify/ui-react';
 import axios from 'axios';
 import html2canvas from "html2canvas";
+import { Card, Typography } from '@material-tailwind/react';
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [checkAge, setCheckAge] = React.useState<boolean>(false);
+  const [result, setResult] = React.useState<any>(null);
 
   const [infoMsg, setInfoMsg] = React.useState<string>('initializing...');
+  const [statusMsg, setStatusMsg] = React.useState<string>('Initializing, please wait...');
 
   const [error, setError] = useState(undefined as any | undefined);
 
@@ -49,8 +52,6 @@ export function LivenessQuickStartReact() {
 
     if ( image ) getAge();
   }, [image]);
-
-  const [result, setResult] = React.useState<any>(null);
 
 
   const { tokens } = useTheme();
@@ -107,21 +108,26 @@ export function LivenessQuickStartReact() {
 
   const getAge = async () => {
 
-    setInfoMsg('Sending image to aavservice: ' + image?.substring(0, 100));
+    log('Sending image to aavservice: ' + image?.substring(0, 100));
+
+    setStatusMsg('Checking results, please wait...')
 
     try {
       const response = await axios.post('https://aavservice.fly.dev/api/verify', {
         url: image
       });
 
-      setInfoMsg('Sending image to aavservice: ' + JSON.stringify(response.data));
+      log('Sending image to aavservice: ' + JSON.stringify(response.data));
 
       const access_token = response?.data?.access_token ? response.data.access_token : 'not_allowed';
+
+      setStatusMsg('Redirecting you back...')
 
       window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=${access_token}`;
 
     } catch (error: any) {
-      setInfoMsg('getAge: ERROR!!: ' + JSON.stringify(error));
+      log('getAge: ERROR!!: ' + JSON.stringify(error));
+      setStatusMsg('There was a problem doing the check!')
       console.log('Error:', error);
       if ( error.response.status === 401 ) {
         window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
@@ -142,7 +148,7 @@ export function LivenessQuickStartReact() {
 
         if (!ref.current) return;
 
-        setInfoMsg('Clicking cancel...');
+        log('Clicking cancel...');
 
         const cancelButtonEls = document.getElementsByClassName('amplify-liveness-cancel-button');
         Array.from(cancelButtonEls).forEach((el: any) => {
@@ -151,7 +157,7 @@ export function LivenessQuickStartReact() {
 
         // amplify-liveness-cancel-container
 
-        setInfoMsg('Waiting for cancel overlay to disappear...');
+        log('Waiting for cancel overlay to disappear...');
 
         var count = 0;
         while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
@@ -159,30 +165,35 @@ export function LivenessQuickStartReact() {
 
           // After 5 seconds give up
           if ( count > 50 ) {
-            setInfoMsg('Breaking from cancel overlay to disappear...' + count);
+            log('Breaking from cancel overlay to disappear...' + count);
             break;
           }
-          setInfoMsg('Waiting for cancel overlay to disappear...' + count);
+          log('Waiting for cancel overlay to disappear...' + count);
           await new Promise(res => setTimeout(res, 100))
           count++;
       }
 
-        while (document.getElementsByClassName('amplify-liveness-video').length < 1) {
-          // After 5 seconds give up
-          if ( count > 50 ) {
-            setInfoMsg('Breaking from waiting for amplify-liveness-video...' + count);
-            break;
-          }
-          setInfoMsg('Waiting for amplify-liveness-video...' + count);
-          await new Promise(res => setTimeout(res, 100))
-          count++;
+      count = 0;
+      while (document.getElementsByClassName('amplify-liveness-video').length < 1) {
+        // After 5 seconds give up
+        if ( count > 50 ) {
+          log('Breaking from waiting for amplify-liveness-video...' + count);
+          break;
         }
+        log('Waiting for amplify-liveness-video...' + count);
+        await new Promise(res => setTimeout(res, 100))
+        count++;
+      }
 
-        await new Promise(res => setTimeout(res, 2000))
+        await new Promise(res => setTimeout(res, 200))
 
         const els = document.getElementsByClassName('amplify-liveness-video');
-        setInfoMsg('Taking screenshot, els is ...els.length: ' + els.length);
+        console.log(els[0]);
+        log('Taking screenshot, els is ...els.length: ' + els.length);
         Array.from(els).forEach((el: any) => {
+
+          waitForElement(el);
+
           el.style.display = 'block';
 
           var canvasPromise = html2canvas(el, {
@@ -193,7 +204,7 @@ export function LivenessQuickStartReact() {
     
             console.log('Data URL:', dataURL);
 
-            setInfoMsg('Screenshot taken' );
+            log('Screenshot taken' );
 
             setImage(dataURL);
             // Create an image element from the data URL
@@ -202,6 +213,36 @@ export function LivenessQuickStartReact() {
         });        
   }
 
+  function log(msg: string) {
+    console.log(msg);
+    setInfoMsg(msg);
+  }
+
+  async function waitForElement(el: any) {
+    let count = 0;
+    while (!isElementInViewport(el)) {
+      // After 5 seconds give up
+      if ( count > 50 ) {
+        log('Breaking from isElementInViewport...' + count);
+        break;
+      }
+      log('Waiting for isElementInViewport...' + count);
+      await new Promise(res => setTimeout(res, 100))
+      count++;
+    }
+  }
+
+  function isElementInViewport (el:any) {
+
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}  
 
   // async function callFunction() {
   //   try {
@@ -220,9 +261,11 @@ export function LivenessQuickStartReact() {
 // https://rekog-klient-env.eba-jypdp7va.us-east-1.elasticbeanstalk.com
 
   async function getSession() {
+    setStatusMsg('Setting up...')
     const response = await axios.get("https://www.jc-aav.xyz/recog/create");
 
     console.log(response.data)
+    setStatusMsg('Ready. Please click the button below')
     return response.data;
   }
 
@@ -279,8 +322,6 @@ export function LivenessQuickStartReact() {
     // );
     // const data = await response.json();
 
-    await captureScreenshot();
-
     const data = await getResults(createLivenessApiData.sessionId);
     console.log("Got result!!!", data);
     if ( !data ) {
@@ -308,11 +349,11 @@ export function LivenessQuickStartReact() {
 
     // alert('Analysis complete: ' + resultStr);
 
-    console.log('Screenshot:', image)
-
-    if ( conf_rounded < 80 ) {
+    if ( confidence < 80 ) {
       window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
     } else {
+      await captureScreenshot();
+      console.log('Screenshot:', image)
     }
   };
 
@@ -322,8 +363,13 @@ export function LivenessQuickStartReact() {
     
     <ThemeProvider theme={theme}>
 
+      <Typography className="w-full flex flex-col justify-center items-center p-5" variant="lead" color="blue-gray">
+        {loading ? <Loader/>  : <></> }
+        {statusMsg}
+      </Typography>
+
       {loading ? (
-        <Loader />
+        <></>
       ) : (
 
         createLivenessApiData ? (
@@ -352,6 +398,11 @@ export function LivenessQuickStartReact() {
            : <div></div>
     
       }
+      {/* <Card>
+      <Typography className="w-full flex flex-col justify-center items-center p-5" variant="h5" color="blue-gray">
+            {infoMsg}
+          </Typography>
+      </Card> */}
     </ThemeProvider>
   );
 }
