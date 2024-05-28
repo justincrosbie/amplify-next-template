@@ -5,7 +5,7 @@ import { FaceLivenessDetector } from '@aws-amplify/ui-react-liveness';
 import { Button, Flex, Text, Heading, Loader, Theme, ThemeProvider, useTheme } from '@aws-amplify/ui-react';
 import axios from 'axios';
 import html2canvas from "html2canvas";
-import { Card, Typography } from '@material-tailwind/react';
+import { Alert, Card, Typography } from '@material-tailwind/react';
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -363,10 +363,12 @@ export function LivenessQuickStartReact() {
     
     <ThemeProvider theme={theme}>
 
-      <Typography className="w-full flex flex-col justify-center items-center p-5" variant="lead" color="blue-gray">
+      <Alert>
         {loading ? <Loader/>  : <></> }
         {statusMsg}
-      </Typography>
+      </Alert>
+
+      <br/>
 
       {loading ? (
         <></>
