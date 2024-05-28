@@ -4,10 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaceLivenessDetector } from '@aws-amplify/ui-react-liveness';
 import { Button, Flex, Text, Heading, Loader, Theme, ThemeProvider, useTheme } from '@aws-amplify/ui-react';
 import axios from 'axios';
-// import { useScreenshot } from 'use-react-screenshot';
 import html2canvas from "html2canvas";
-import { QualityFilter } from '@aws-sdk/client-rekognition';
-import { Typography } from '@material-tailwind/react';
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -18,8 +15,6 @@ export function LivenessQuickStartReact() {
   const [error, setError] = useState(undefined as any | undefined);
 
   const ref = useRef(null)
-  // const [image, takeScreenshot] = useScreenshot()
-  // const getImage = () => takeScreenshot(ref.current)
 
   const [image, setImage] = React.useState<string | null>(null);
 
@@ -29,16 +24,6 @@ export function LivenessQuickStartReact() {
 
   useEffect(() => {
     const fetchCreateLiveness: () => Promise<void> = async () => {
-      /*
-       * This should be replaced with a real call to your own backend API
-       */
-      // await new Promise((r) => setTimeout(r, 2000));
-      // const mockResponse = { sessionId: '132b83b9-7ec5-460c-a647-c04c66a535ad' };
-      // const data = mockResponse;
-
-      // console.log('Calling function');
-      // const testData = await callFunction();
-      // console.log('Test Data:', testData);
 
       const data = await getSession();
 
@@ -128,7 +113,6 @@ export function LivenessQuickStartReact() {
       const response = await axios.post('https://aavservice.fly.dev/api/verify', {
         url: image
       });
-      console.log(response)
 
       setInfoMsg('Sending image to aavservice: ' + JSON.stringify(response.data));
 

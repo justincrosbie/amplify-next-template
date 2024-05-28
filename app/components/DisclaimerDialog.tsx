@@ -11,9 +11,9 @@ export function DisclaimerDialog() {
   const [open, setOpen] = React.useState(true);
  
   const handleOpen = () => setOpen(!open);
+  const handleClose = () => window.location.href = `https://adulthub.fly.dev`;
  
   return (
-    <>
       <Dialog open={open} handler={handleOpen}>
         <DialogHeader>Anonymous Age Verification</DialogHeader>
         <DialogBody>
@@ -23,7 +23,7 @@ export function DisclaimerDialog() {
         <Button
             variant="text"
             color="red"
-            onClick={handleOpen}
+            onClick={handleClose}
             className="mr-1"
           >
             <span>Cancel</span>
@@ -33,6 +33,5 @@ export function DisclaimerDialog() {
           </Button>
         </DialogFooter>
       </Dialog>
-    </>
   );
 }

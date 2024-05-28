@@ -56,10 +56,10 @@ export default function App() {
         <WebcamArea/>
 
         <br/>
-        <footer className="w-full bg-transparent p-2">
-          <div className="flex flex-row flex-wrap items-center justify-center gap-x-12 bg-transparent text-center md:justify-between">
+        <footer className="w-full justify-center items-center bg-transparent p-2">
+          <div className="flex flex-row flex-wrap items-center justify-center bg-transparent text-center">
             <img src="./govlogo.png" alt="logo-ct" className="w-10" />
-            <ul className="flex flex-wrap items-center gap-y-2 gap-x-8">
+            <ul className="flex flex-wrap justify-center items-center gap-y-2 gap-x-8 p-2">
               <li>
                 <Typography
                   as="a"
