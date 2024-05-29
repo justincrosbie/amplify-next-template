@@ -8,6 +8,8 @@ import html2canvas from "html2canvas";
 import { Alert, Card, Typography } from '@material-tailwind/react';
 
 let thisImage = '';
+let didAddCaptureClick = false;
+let didTakeScreenshot = false;
 
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -213,6 +215,8 @@ export function LivenessQuickStartReact() {
 
             thisImage = dataURL;
 
+            didTakeScreenshot = true;
+
             // setImage(dataURL);
             if ( sendImage)
               setImage(dataURL);
@@ -250,6 +254,7 @@ export function LivenessQuickStartReact() {
             captureScreenshot(false);
         }, false);      
 
+        didAddCaptureClick = true;
     });        
 
     log('Video ready' + count);
@@ -453,7 +458,7 @@ async function clickCancel() {
         log ('Image set');
         getAge();
       }
-      else log('Image not set');
+      else log('Image not set: ' + didAddCaptureClick + ' ' + didTakeScreenshot);
     }
   };
 
