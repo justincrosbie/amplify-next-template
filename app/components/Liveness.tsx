@@ -414,7 +414,7 @@ async function clickCancel() {
       throw new Error('Result data not found');
   }
 
-    clickCancel();
+    await clickCancel();
 
     log('Cancel clicked');
 
