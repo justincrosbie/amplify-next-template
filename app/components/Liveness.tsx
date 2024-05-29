@@ -258,7 +258,7 @@ export function LivenessQuickStartReact() {
         didAddCaptureClick = true;
     });        
 
-    log('Video ready' + count);
+    log('Video ready. Click the buttom below to begin');
     captureAfterDelay();
   }
 
