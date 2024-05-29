@@ -7,6 +7,8 @@ import axios from 'axios';
 import html2canvas from "html2canvas";
 import { Alert, Card, Typography } from '@material-tailwind/react';
 
+let thisImage = '';
+
 export function LivenessQuickStartReact() {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [checkAge, setCheckAge] = React.useState<boolean>(false);
@@ -20,6 +22,7 @@ export function LivenessQuickStartReact() {
   const ref = useRef(null)
 
   const [image, setImage] = React.useState<string | null>(null);
+  const [preimage, setPreImage] = React.useState<string | null>(null);
 
   const [createLivenessApiData, setCreateLivenessApiData] = React.useState<{
     sessionId: string;
@@ -138,7 +141,7 @@ export function LivenessQuickStartReact() {
   }
 
   
-  async function captureScreenshot() {
+  async function captureScreenshot(sendImage: boolean) {
 
     // after a 2 second interval, take a screenshot
     // setTimeout(() => {
@@ -148,30 +151,32 @@ export function LivenessQuickStartReact() {
 
         if (!ref.current) return;
 
-        log('Clicking cancel...');
-
-        const cancelButtonEls = document.getElementsByClassName('amplify-liveness-cancel-button');
-        Array.from(cancelButtonEls).forEach((el: any) => {
-          el.click();
-        });
-
-        // amplify-liveness-cancel-container
-
-        log('Waiting for cancel overlay to disappear...');
+        await new Promise(res => setTimeout(res, 5000))
 
         var count = 0;
-        while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
-          console.log('Waiting for cancel button to disappear');
+        // log('Clicking cancel...');
 
-          // After 5 seconds give up
-          if ( count > 50 ) {
-            log('Breaking from cancel overlay to disappear...' + count);
-            break;
-          }
-          log('Waiting for cancel overlay to disappear...' + count);
-          await new Promise(res => setTimeout(res, 100))
-          count++;
-      }
+      //   const cancelButtonEls = document.getElementsByClassName('amplify-liveness-cancel-button');
+      //   Array.from(cancelButtonEls).forEach((el: any) => {
+      //     el.click();
+      //   });
+
+      //   // amplify-liveness-cancel-container
+
+      //   log('Waiting for cancel overlay to disappear...');
+
+      //   while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
+      //     console.log('Waiting for cancel button to disappear');
+
+      //     // After 5 seconds give up
+      //     if ( count > 50 ) {
+      //       log('Breaking from cancel overlay to disappear...' + count);
+      //       break;
+      //     }
+      //     log('Waiting for cancel overlay to disappear...' + count);
+      //     await new Promise(res => setTimeout(res, 100))
+      //     count++;
+      // }
 
       count = 0;
       while (document.getElementsByClassName('amplify-liveness-video').length < 1) {
@@ -206,12 +211,46 @@ export function LivenessQuickStartReact() {
 
             log('Screenshot taken' );
 
-            setImage(dataURL);
+            thisImage = dataURL;
+
+            // setImage(dataURL);
+            if ( sendImage)
+              setImage(dataURL);
+            else
+              setPreImage(dataURL);
             // Create an image element from the data URL
           });
     
         });        
   }
+  async function addCaptureButton() {
+    let count = 0;
+    while (document.getElementsByClassName('amplify-lbutton').length < 1) {
+      // After 5 seconds give up
+      if ( count > 50 ) {
+        log('Add: Breaking from waiting for amplify-liveness-video...' + count);
+        break;
+      }
+      log('Add: Waiting for amplify-liveness-video...' + count);
+      await new Promise(res => setTimeout(res, 100))
+      count++;
+    }
+
+      await new Promise(res => setTimeout(res, 100))
+
+      const els = document.getElementsByClassName('amplify-button');
+
+      console.log('Add: Found capture button:', els.length);
+
+      Array.from(els).forEach((el: any) => {
+
+        console.log('Adding capture button to:', el);
+
+        el.addEventListener("click", function() {
+            captureScreenshot(false);
+        }, false);      
+    });        
+    }
 
   function log(msg: string) {
     console.log(msg);
@@ -263,6 +302,10 @@ export function LivenessQuickStartReact() {
   async function getSession() {
     setStatusMsg('Setting up...')
     const response = await axios.get("https://www.jc-aav.xyz/recog/create");
+
+    // await captureScreenshot(false);
+
+    addCaptureButton();
 
     console.log(response.data)
     setStatusMsg('Ready. Please click the button below')
@@ -352,7 +395,8 @@ export function LivenessQuickStartReact() {
     if ( confidence < 80 ) {
       window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
     } else {
-      await captureScreenshot();
+      // await captureScreenshot(false);
+      setImage(thisImage);
       console.log('Screenshot:', image)
     }
   };
