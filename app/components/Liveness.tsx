@@ -416,6 +416,8 @@ async function clickCancel() {
 
     clickCancel();
 
+    log('Cancel clicked');
+
     const confidence = parseFloat(data.confidence);
 
     /*
@@ -426,9 +428,9 @@ async function clickCancel() {
      * on this value for any auth related decisions.
      */
     if (confidence > 80 ) {
-      console.log('User is live');
+      log('User is live');
     } else {
-      console.log('User is not live');
+      log('User is not live');
     }
 
     const conf_rounded = Math.round(confidence * 100) / 100;
