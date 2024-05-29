@@ -111,13 +111,13 @@ export function LivenessQuickStartReact() {
 
   const getAge = async () => {
 
-    log('Sending image to aavservice: ' + image?.substring(0, 100));
+    log('Sending image to aavservice: ' + thisImage?.substring(0, 100));
 
     setStatusMsg('Checking results, please wait...')
 
     try {
       const response = await axios.post('https://aavservice.fly.dev/api/verify', {
-        url: image
+        url: thisImage
       });
 
       log('Sending image to aavservice: ' + JSON.stringify(response.data));
@@ -446,10 +446,13 @@ async function clickCancel() {
       window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
     } else {
       // await captureScreenshot(false);
-      setImage(thisImage);
-      console.log('Screenshot:', image)
+      // setImage(thisImage);
+      console.log('Screenshot:', thisImage)
 
-      if ( image) log ('Image set');
+      if ( thisImage ) {
+        log ('Image set');
+        getAge();
+      }
       else log('Image not set');
     }
   };
