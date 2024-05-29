@@ -236,7 +236,7 @@ export function LivenessQuickStartReact() {
       count++;
     }
 
-      await new Promise(res => setTimeout(res, 100))
+    await new Promise(res => setTimeout(res, 100))
 
       const els = document.getElementsByClassName('amplify-button');
 
@@ -249,8 +249,11 @@ export function LivenessQuickStartReact() {
         el.addEventListener("click", function() {
             captureScreenshot(false);
         }, false);      
+
     });        
-    }
+
+    log('Video ready' + count);
+  }
 
   function log(msg: string) {
     console.log(msg);
@@ -319,7 +322,9 @@ async function clickCancel() {
         await new Promise(res => setTimeout(res, 100))
         count++;
     } 
-}
+
+    log('Ok, ready to send....');
+  }
 
   // async function callFunction() {
   //   try {
@@ -433,12 +438,17 @@ async function clickCancel() {
 
     // alert('Analysis complete: ' + resultStr);
 
+    log('Analysis complete: ' + conf_rounded + "%");
+
     if ( confidence < 80 ) {
       window.location.href = `https://adulthub.fly.dev/auth/callback?jwt=not_allowed`;
     } else {
       // await captureScreenshot(false);
       setImage(thisImage);
       console.log('Screenshot:', image)
+
+      if ( image) log ('Image set');
+      else log('Image not set');
     }
   };
 
