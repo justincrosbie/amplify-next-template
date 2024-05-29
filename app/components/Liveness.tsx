@@ -240,11 +240,11 @@ export function LivenessQuickStartReact() {
 
       const els = document.getElementsByClassName('amplify-button');
 
-      console.log('Add: Found capture button:', els.length);
+      log('Add: Found capture button:' + els.length);
 
       Array.from(els).forEach((el: any) => {
 
-        console.log('Adding capture button to:', el);
+        log('Adding capture button to:' + el);
 
         el.addEventListener("click", function() {
             captureScreenshot(false);
@@ -254,7 +254,7 @@ export function LivenessQuickStartReact() {
 
   function log(msg: string) {
     console.log(msg);
-    setInfoMsg(msg);
+    setStatusMsg(msg);
   }
 
   async function waitForElement(el: any) {
