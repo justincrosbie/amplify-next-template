@@ -213,6 +213,7 @@ export function LivenessQuickStartReact() {
 
             log('Screenshot taken' );
 
+            if ( !thisImage )
             thisImage = dataURL;
 
             didTakeScreenshot = true;
