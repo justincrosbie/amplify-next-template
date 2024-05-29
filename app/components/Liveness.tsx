@@ -225,13 +225,13 @@ export function LivenessQuickStartReact() {
   }
   async function addCaptureButton() {
     let count = 0;
-    while (document.getElementsByClassName('amplify-lbutton').length < 1) {
+    while (document.getElementsByClassName('amplify-button').length < 1) {
       // After 5 seconds give up
       if ( count > 50 ) {
         log('Add: Breaking from waiting for amplify-liveness-video...' + count);
         break;
       }
-      log('Add: Waiting for amplify-liveness-video...' + count);
+      log('Waiting for video...' + count);
       await new Promise(res => setTimeout(res, 100))
       count++;
     }
@@ -240,11 +240,11 @@ export function LivenessQuickStartReact() {
 
       const els = document.getElementsByClassName('amplify-button');
 
-      log('Add: Found capture button:' + els.length);
+      // log('Add: Found capture button:' + els.length);
 
       Array.from(els).forEach((el: any) => {
 
-        log('Adding capture button to:' + el);
+        // console.log('Adding capture button to:' + el);
 
         el.addEventListener("click", function() {
             captureScreenshot(false);
@@ -282,6 +282,44 @@ export function LivenessQuickStartReact() {
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
     );
 }  
+
+async function clickCancel() {
+
+  // after a 2 second interval, take a screenshot
+  // setTimeout(() => {
+  //   // takeScreenshot(ref.current);
+  //   takeScreenshot(ref.current);
+  // }, 2000);
+
+      if (!ref.current) return;
+
+      await new Promise(res => setTimeout(res, 5000))
+
+      var count = 0;
+      log('Clicking cancel...');
+
+      const cancelButtonEls = document.getElementsByClassName('amplify-liveness-cancel-button');
+      Array.from(cancelButtonEls).forEach((el: any) => {
+        el.click();
+      });
+
+      // amplify-liveness-cancel-container
+
+      log('Waiting for cancel overlay to disappear...');
+
+      while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
+        console.log('Waiting for cancel button to disappear');
+
+        // After 5 seconds give up
+        if ( count > 50 ) {
+          log('Breaking from cancel overlay to disappear...' + count);
+          break;
+        }
+        log('Waiting for cancel overlay to disappear...' + count);
+        await new Promise(res => setTimeout(res, 100))
+        count++;
+    } 
+}
 
   // async function callFunction() {
   //   try {
@@ -370,6 +408,9 @@ export function LivenessQuickStartReact() {
     if ( !data ) {
       throw new Error('Result data not found');
   }
+
+    clickCancel();
+
     const confidence = parseFloat(data.confidence);
 
     /*
