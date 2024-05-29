@@ -258,6 +258,7 @@ export function LivenessQuickStartReact() {
     });        
 
     log('Video ready' + count);
+    captureAfterDelay();
   }
 
   function log(msg: string) {
@@ -290,6 +291,12 @@ export function LivenessQuickStartReact() {
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
     );
 }  
+
+async function captureAfterDelay() {
+  await new Promise(res => setTimeout(res, 10000))
+
+  await captureScreenshot(false)
+}
 
 async function clickCancel() {
 
