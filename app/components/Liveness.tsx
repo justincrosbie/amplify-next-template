@@ -184,10 +184,10 @@ export function LivenessQuickStartReact() {
       while (document.getElementsByClassName('amplify-liveness-video').length < 1) {
         // After 5 seconds give up
         if ( count > 50 ) {
-          log('Breaking from waiting for amplify-liveness-video...' + count);
+          // log('Breaking from waiting for amplify-liveness-video...' + count);
           break;
         }
-        log('Waiting for amplify-liveness-video...' + count);
+        // log('Waiting for amplify-liveness-video...' + count);
         await new Promise(res => setTimeout(res, 100))
         count++;
       }
@@ -233,10 +233,10 @@ export function LivenessQuickStartReact() {
     while (document.getElementsByClassName('amplify-button').length < 1) {
       // After 5 seconds give up
       if ( count > 50 ) {
-        log('Add: Breaking from waiting for amplify-liveness-video...' + count);
+        // log('Add: Breaking from waiting for amplify-liveness-video...' + count);
         break;
       }
-      log('Waiting for video...' + count);
+      // log('Waiting for video...' + count);
       await new Promise(res => setTimeout(res, 100))
       count++;
     }
@@ -258,7 +258,7 @@ export function LivenessQuickStartReact() {
         didAddCaptureClick = true;
     });        
 
-    log('Video ready. Click the buttom below to begin');
+    log('Video ready. Click the button below to begin');
     captureAfterDelay();
   }
 
@@ -272,10 +272,10 @@ export function LivenessQuickStartReact() {
     while (!isElementInViewport(el)) {
       // After 5 seconds give up
       if ( count > 50 ) {
-        log('Breaking from isElementInViewport...' + count);
+        // log('Breaking from isElementInViewport...' + count);
         break;
       }
-      log('Waiting for isElementInViewport...' + count);
+      // log('Waiting for isElementInViewport...' + count);
       await new Promise(res => setTimeout(res, 100))
       count++;
     }
@@ -312,7 +312,7 @@ async function clickCancel() {
       await new Promise(res => setTimeout(res, 5000))
 
       var count = 0;
-      log('Clicking cancel...');
+      log('Clicking cancel button...');
 
       const cancelButtonEls = document.getElementsByClassName('amplify-liveness-cancel-button');
       Array.from(cancelButtonEls).forEach((el: any) => {
@@ -324,14 +324,14 @@ async function clickCancel() {
       log('Waiting for cancel overlay to disappear...');
 
       while (document.getElementsByClassName('amplify-liveness-cancel-container').length > 0) {
-        console.log('Waiting for cancel button to disappear');
+        // console.log('Waiting for cancel button to disappear');
 
         // After 5 seconds give up
         if ( count > 50 ) {
-          log('Breaking from cancel overlay to disappear...' + count);
+          // log('Breaking from cancel overlay to disappear...' + count);
           break;
         }
-        log('Waiting for cancel overlay to disappear...' + count);
+        // log('Waiting for cancel overlay to disappear...' + count);
         await new Promise(res => setTimeout(res, 100))
         count++;
     } 
