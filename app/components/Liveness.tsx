@@ -357,7 +357,7 @@ async function clickCancel() {
 
   async function getSession() {
     setStatusMsg('Setting up...')
-    const response = await axios.get("https://www.jc-aav.xyz/recog/create");
+    const response = await axios.get("https://jc-aav.xyz/recog/create");
 
     // await captureScreenshot(false);
 
@@ -370,7 +370,7 @@ async function clickCancel() {
 
   async function getResults(sessionId: string) {
 
-    const response = await axios.get(`https://www.jc-aav.xyz/recog/results/${sessionId}`);
+    const response = await axios.get(`https://jc-aav.xyz/recog/results/${sessionId}`);
 
     console.log(response.data)
     return response.data;
